@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setBookmarks } from '../store';
 import axios from 'axios';
 import TrailerModal from '../components/TrailerModal';
+import DetailsModal from '../components/DetailsModal';
 import { toast } from 'react-hot-toast';
 import { useEffect, useState } from 'react';
 
@@ -30,12 +31,6 @@ const Movies = () => {
       try {
         const data = await fetchMovies();
         setMovies(data);
-        if (token && bookmarks.length === 0) {
-          const { data: bData } = await axios.get('http://localhost:5000/api/bookmarks', {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          dispatch(setBookmarks(bData));
-        }
       } catch (error) {
         console.error('Error loading movies:', error);
       } finally {
@@ -76,6 +71,7 @@ const Movies = () => {
   );
 
   const [activeVideo, setActiveVideo] = useState(null);
+  const [detailsState, setDetailsState] = useState(null);
 
   const handlePlay = async (item) => {
     try {
@@ -85,6 +81,10 @@ const Movies = () => {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleDetails = (id, type) => {
+    setDetailsState({ id, type });
   };
 
   if (loading) return <div className="p-8 text-center">Loading...</div>;
@@ -108,11 +108,19 @@ const Movies = () => {
               isBookmarked={bookmarks.some(b => b.tmdbId === item.id)}
               onToggleBookmark={handleToggleBookmark}
               onPlay={handlePlay}
+              onDetails={handleDetails}
             />
           ))}
         </div>
       </section>
       <TrailerModal videoKey={activeVideo} onClose={() => setActiveVideo(null)} />
+      {detailsState && (
+        <DetailsModal 
+          id={detailsState.id} 
+          type={detailsState.type} 
+          onClose={() => setDetailsState(null)} 
+        />
+      )}
     </div>
   );
 };

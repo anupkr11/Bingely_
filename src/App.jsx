@@ -7,11 +7,31 @@ import Signup from './pages/Signup';
 import Movies from './pages/Movies';
 import TVSeries from './pages/TVSeries';
 import Bookmarks from './pages/Bookmarks';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
+import { setBookmarks } from './store';
+import axios from 'axios';
+import { useEffect } from 'react';
 
 function App() {
   const { token } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const fetchAllBookmarks = async () => {
+      if (token) {
+        try {
+          const { data } = await axios.get('http://localhost:5000/api/bookmarks', {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          dispatch(setBookmarks(data));
+        } catch (error) {
+          console.error('Error fetching initial bookmarks:', error);
+        }
+      }
+    };
+    fetchAllBookmarks();
+  }, [token, dispatch]);
 
   return (
     <Router>

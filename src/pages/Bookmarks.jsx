@@ -4,6 +4,7 @@ import { setBookmarks } from '../store';
 import axios from 'axios';
 import { fetchVideos } from '../api/tmdb';
 import TrailerModal from '../components/TrailerModal';
+import DetailsModal from '../components/DetailsModal';
 import { useState } from 'react';
 import SearchBar from '../components/SearchBar';
 
@@ -44,6 +45,7 @@ const Bookmarks = () => {
   const bookmarkedTV = filteredBookmarks.filter(b => b.type === 'tv');
 
   const [activeVideo, setActiveVideo] = useState(null);
+  const [detailsState, setDetailsState] = useState(null);
 
   const handlePlay = async (item) => {
     try {
@@ -54,6 +56,10 @@ const Bookmarks = () => {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleDetails = (id, type) => {
+    setDetailsState({ id, type });
   };
 
   if (!token) return <div className="p-8 text-center text-2xl font-light">Please login to see your bookmarks</div>;
@@ -77,6 +83,7 @@ const Bookmarks = () => {
                 isBookmarked={true}
                 onToggleBookmark={handleToggleBookmark}
                 onPlay={handlePlay}
+                onDetails={handleDetails}
               />
             ))}
           </div>
@@ -125,6 +132,13 @@ const Bookmarks = () => {
         </>
       )}
       <TrailerModal videoKey={activeVideo} onClose={() => setActiveVideo(null)} />
+      {detailsState && (
+        <DetailsModal 
+          id={detailsState.id} 
+          type={detailsState.type} 
+          onClose={() => setDetailsState(null)} 
+        />
+      )}
     </div>
   );
 };

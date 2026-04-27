@@ -39,6 +39,13 @@ export const fetchVideos = async (id, type) => {
   return data.results.find(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser'));
 };
 
+export const fetchDetails = async (id, type) => {
+  const { data } = await tmdb.get(`/${type}/${id}`, {
+    params: { append_to_response: 'credits' }
+  });
+  return data;
+};
+
 export const getImageUrl = (path, size = 'original') => {
   if (!path) return null;
   return `${IMAGE_BASE_URL}/${size}${path}`;

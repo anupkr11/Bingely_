@@ -7,6 +7,7 @@ import { setBookmarks } from '../store';
 import axios from 'axios';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import TrailerModal from '../components/TrailerModal';
+import DetailsModal from '../components/DetailsModal';
 import { toast } from 'react-hot-toast';
 
 const Home = () => {
@@ -35,14 +36,6 @@ const Home = () => {
         const recommendedData = await fetchMovies();
         setTrending(trendingData);
         setRecommended(recommendedData);
-        
-        // Load bookmarks if logged in
-        if (token) {
-          const { data } = await axios.get('http://localhost:5000/api/bookmarks', {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          dispatch(setBookmarks(data));
-        }
       } catch (error) {
         console.error('Error loading data:', error);
       } finally {
@@ -102,6 +95,7 @@ const Home = () => {
   };
 
   const [activeVideo, setActiveVideo] = useState(null);
+  const [detailsState, setDetailsState] = useState(null);
 
   const handlePlay = async (item) => {
     try {
@@ -115,6 +109,10 @@ const Home = () => {
     } catch (error) {
       console.error('Error fetching trailer:', error);
     }
+  };
+
+  const handleDetails = (id, type) => {
+    setDetailsState({ id, type });
   };
 
   if (loading) return <div className="p-8 text-center">Loading...</div>;
@@ -140,6 +138,7 @@ const Home = () => {
                       isBookmarked={isBookmarked(item.id)}
                       onToggleBookmark={handleToggleBookmark}
                       onPlay={handlePlay}
+                      onDetails={handleDetails}
                     />
                   ))}
                 </div>
@@ -173,6 +172,7 @@ const Home = () => {
                     isBookmarked={isBookmarked(item.id)}
                     onToggleBookmark={handleToggleBookmark}
                     onPlay={handlePlay}
+                    onDetails={handleDetails}
                   />
                 ))}
               </div>
@@ -197,6 +197,7 @@ const Home = () => {
                   isBookmarked={isBookmarked(item.id)}
                   onToggleBookmark={handleToggleBookmark}
                   onPlay={handlePlay}
+                  onDetails={handleDetails}
                 />
               ))}
             </div>
@@ -205,6 +206,13 @@ const Home = () => {
       )}
       
       <TrailerModal videoKey={activeVideo} onClose={() => setActiveVideo(null)} />
+      {detailsState && (
+        <DetailsModal 
+          id={detailsState.id} 
+          type={detailsState.type} 
+          onClose={() => setDetailsState(null)} 
+        />
+      )}
     </div>
   );
 };

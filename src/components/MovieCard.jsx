@@ -2,13 +2,19 @@ import React from 'react';
 import { Bookmark, Play, Film, Tv } from 'lucide-react';
 import { getImageUrl } from '../api/tmdb';
 
-const MovieCard = ({ item, isBookmarked, onToggleBookmark, onPlay, isTrending = false }) => {
+const MovieCard = ({ item, isBookmarked, onToggleBookmark, onPlay, onDetails, isTrending = false }) => {
   const title = item.title || item.name || item.original_title || item.original_name;
   const year = (item.release_date || item.first_air_date || '').split('-')[0];
   const type = item.media_type === 'tv' || item.first_air_date ? 'TV Series' : 'Movie';
-  
+  const typeKey = item.media_type || (item.first_air_date ? 'tv' : 'movie');
+
   // Use backdrop for both for a more cinematic grid look as per the design screenshots
   const imagePath = item.backdrop_path || item.poster_path;
+
+  const handleTitleClick = (e) => {
+    e.stopPropagation();
+    if (onDetails) onDetails(item.id, typeKey);
+  };
 
   return (
     <div className={`group relative ${isTrending ? 'min-w-[280px] md:min-w-[470px] h-[140px] md:h-[230px]' : 'w-full'}`}>
@@ -54,7 +60,12 @@ const MovieCard = ({ item, isBookmarked, onToggleBookmark, onPlay, isTrending = 
               <span>•</span>
               <span>PG</span>
             </div>
-            <h3 className="text-lg md:text-2xl font-medium truncate">{title}</h3>
+            <h3 
+              className="text-lg md:text-2xl font-medium truncate cursor-pointer hover:underline decoration-primary underline-offset-4"
+              onClick={handleTitleClick}
+            >
+              {title}
+            </h3>
           </div>
         )}
       </div>
@@ -71,7 +82,12 @@ const MovieCard = ({ item, isBookmarked, onToggleBookmark, onPlay, isTrending = 
             <span>•</span>
             <span>PG</span>
           </div>
-          <h3 className="text-lg font-medium truncate">{title}</h3>
+          <h3 
+            className="text-lg font-medium truncate cursor-pointer hover:underline decoration-primary underline-offset-4"
+            onClick={handleTitleClick}
+          >
+            {title}
+          </h3>
         </div>
       )}
     </div>
