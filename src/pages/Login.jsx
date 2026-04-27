@@ -9,20 +9,33 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false); // ✅ added
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // start animation
     dispatch(loginStart());
+
     try {
-      const { data } = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+      const { data } = await axios.post(
+        'http://localhost:5000/api/auth/login',
+        { email, password }
+      );
+
       dispatch(loginSuccess(data));
-      navigate('/');
+
+      // small delay for smooth UX
+      setTimeout(() => {
+        navigate('/');
+      }, 800);
+
     } catch (err) {
       const msg = err.response?.data?.message || 'Login failed';
       dispatch(loginFailure(msg));
       setError(msg);
+      setLoading(false); // stop animation on error
     }
   };
 
@@ -34,7 +47,9 @@ const Login = () => {
         <h1 className="text-3xl mb-10 font-light">Login</h1>
         
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-          <div className="relative">
+          
+          {/* Email */}
+          <div>
             <input
               type="email"
               placeholder="Email address"
@@ -42,10 +57,12 @@ const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={loading}
             />
           </div>
           
-          <div className="relative">
+          {/* Password */}
+          <div>
             <input
               type="password"
               placeholder="Password"
@@ -53,19 +70,39 @@ const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={loading}
             />
           </div>
 
-          {error && <p className="text-primary text-xs mt-2">{error}</p>}
+          {/* Error */}
+          {error && (
+            <p className="text-primary text-xs mt-2">{error}</p>
+          )}
 
+          {/* Button */}
           <button
             type="submit"
-            className="w-full py-4 bg-primary text-pure-white rounded-lg mt-4 hover:bg-pure-white hover:text-dark-blue transition-colors font-light"
+            disabled={loading}
+            className={`w-full py-4 rounded-lg mt-4 font-light transition-all
+              ${loading 
+                ? 'bg-grey-blue cursor-not-allowed text-white/70' 
+                : 'bg-primary text-pure-white hover:bg-pure-white hover:text-dark-blue cursor-pointer'
+              }`}
           >
-            Login to your account
+            {loading ? (
+              <span className="flex items-center justify-center gap-1">
+                <span className="animate-pulse">Logging in</span>
+                <span className="animate-bounce">.</span>
+                <span className="animate-bounce delay-100">.</span>
+                <span className="animate-bounce delay-200">.</span>
+              </span>
+            ) : (
+              'Login to your account'
+            )}
           </button>
         </form>
 
+        {/* Signup link */}
         <p className="text-center mt-6 text-pure-white/75 font-light">
           Don't have an account?{' '}
           <NavLink to="/signup" className="text-primary hover:underline">

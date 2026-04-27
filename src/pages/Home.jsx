@@ -62,7 +62,7 @@ const Home = () => {
         type,
         posterPath: item.poster_path,
         year,
-        rating: 'PG' // Placeholder
+        rating: 'PG' 
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -155,7 +155,7 @@ const Home = () => {
               {/* Left Scroll Button */}
               <button 
                 onClick={() => scroll('left')}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-30 bg-dark-blue/60 backdrop-blur-md p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex items-center justify-center border border-pure-white/10"
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-30 bg-dark-blue/60 backdrop-blur-md p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex items-center justify-center border border-pure-white/10 cursor-pointer"
               >
                 <ChevronLeft size={24} />
               </button>
@@ -180,7 +180,7 @@ const Home = () => {
               {/* Right Scroll Button */}
               <button 
                 onClick={() => scroll('right')}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-30 bg-dark-blue/60 backdrop-blur-md p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex items-center justify-center border border-pure-white/10"
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-30 bg-dark-blue/60 backdrop-blur-md p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex items-center justify-center border border-pure-white/10 cursor-pointer"
               >
                 <ChevronRight size={24} />
               </button>
