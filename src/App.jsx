@@ -8,12 +8,20 @@ import Movies from './pages/Movies';
 import TVSeries from './pages/TVSeries';
 import Bookmarks from './pages/Bookmarks';
 import { useSelector } from 'react-redux';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   const { token } = useSelector((state) => state.auth);
 
   return (
     <Router>
+      <Toaster position="top-center" toastOptions={{
+        style: {
+          background: '#161D2F',
+          color: '#fff',
+          border: '1px solid #5A698F'
+        }
+      }} />
       <Routes>
         <Route path="/login" element={!token ? <Login /> : <Navigate to="/" />} />
         <Route path="/signup" element={!token ? <Signup /> : <Navigate to="/" />} />

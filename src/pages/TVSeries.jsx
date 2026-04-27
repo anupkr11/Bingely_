@@ -5,16 +5,25 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setBookmarks } from '../store';
 import axios from 'axios';
 import TrailerModal from '../components/TrailerModal';
+import { toast } from 'react-hot-toast';
 import { useEffect, useState } from 'react';
 
 const TVSeries = () => {
   const [tvSeries, setTvSeries] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
   const { items: bookmarks } = useSelector((state) => state.bookmarks);
   const { token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -53,13 +62,17 @@ const TVSeries = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       dispatch(setBookmarks(data));
+
+      if (data.some(b => b.tmdbId === item.id)) {
+        toast.success(`${item.name} bookmarked!`);
+      }
     } catch (error) {
       console.error('Error toggling bookmark:', error);
     }
   };
 
   const filteredTV = tvSeries.filter(t => 
-    (t.name || '').toLowerCase().includes(searchQuery.toLowerCase())
+    (t.name || '').toLowerCase().includes(debouncedSearchQuery.toLowerCase())
   );
 
   const [activeVideo, setActiveVideo] = useState(null);
@@ -85,7 +98,7 @@ const TVSeries = () => {
       />
       <section>
         <h2 className="text-xl md:text-3xl mb-8 font-light">
-          {searchQuery ? `Found ${filteredTV.length} results for '${searchQuery}'` : 'TV Series'}
+          {debouncedSearchQuery ? `Found ${filteredTV.length} results for '${debouncedSearchQuery}'` : 'TV Series'}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 md:gap-x-10 gap-y-6 md:gap-y-10">
           {filteredTV.map((item) => (

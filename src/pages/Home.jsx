@@ -7,17 +7,26 @@ import { setBookmarks } from '../store';
 import axios from 'axios';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import TrailerModal from '../components/TrailerModal';
+import { toast } from 'react-hot-toast';
 
 const Home = () => {
   const [trending, setTrending] = useState([]);
   const [recommended, setRecommended] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const { items: bookmarks } = useSelector((state) => state.bookmarks);
   const { token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -70,6 +79,11 @@ const Home = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       dispatch(setBookmarks(updatedBookmarks));
+      
+      const isNowBookmarked = updatedBookmarks.some(b => b.tmdbId === item.id);
+      if (isNowBookmarked) {
+        toast.success(`${item.title || item.name} bookmarked! View in bookmarks tab.`);
+      }
     } catch (error) {
       console.error('Error toggling bookmark:', error);
     }
@@ -109,23 +123,29 @@ const Home = () => {
     <div className="flex flex-col gap-8">
       <SearchBar value={searchQuery} onChange={setSearchQuery} />
 
-      {searchQuery ? (
+      {debouncedSearchQuery ? (
         <section>
-          <h2 className="text-xl md:text-3xl mb-8">Found {searchResults.length} results for '{searchQuery}'</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 md:gap-x-10 gap-y-6 md:gap-y-10">
-            {/* Search results logic here if needed, or filter local */}
-            {(recommended.concat(trending)).filter(item => 
-              (item.title || item.name || '').toLowerCase().includes(searchQuery.toLowerCase())
-            ).map((item) => (
-              <MovieCard 
-                key={item.id} 
-                item={item} 
-                isBookmarked={isBookmarked(item.id)}
-                onToggleBookmark={handleToggleBookmark}
-                onPlay={handlePlay}
-              />
-            ))}
-          </div>
+          {(() => {
+            const results = (recommended.concat(trending)).filter(item => 
+              (item.title || item.name || '').toLowerCase().includes(debouncedSearchQuery.toLowerCase())
+            );
+            return (
+              <>
+                <h2 className="text-xl md:text-3xl mb-8">Found {results.length} results for '{debouncedSearchQuery}'</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 md:gap-x-10 gap-y-6 md:gap-y-10">
+                  {results.map((item) => (
+                    <MovieCard 
+                      key={item.id} 
+                      item={item} 
+                      isBookmarked={isBookmarked(item.id)}
+                      onToggleBookmark={handleToggleBookmark}
+                      onPlay={handlePlay}
+                    />
+                  ))}
+                </div>
+              </>
+            );
+          })()}
         </section>
       ) : (
         <>
