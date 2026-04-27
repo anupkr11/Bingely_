@@ -4,7 +4,7 @@ import MovieCard from '../components/MovieCard';
 import { fetchTrending, fetchMovies, fetchVideos } from '../api/tmdb';
 import { useSelector, useDispatch } from 'react-redux';
 import { setBookmarks } from '../store';
-import axios from 'axios';
+import API from '../api/axios';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import TrailerModal from '../components/TrailerModal';
 import DetailsModal from '../components/DetailsModal';
@@ -56,7 +56,7 @@ const Home = () => {
       const year = (item.release_date || item.first_air_date || '').split('-')[0];
       const type = item.media_type === 'tv' || item.first_air_date ? 'tv' : 'movie';
       
-      const { data } = await axios.post('http://localhost:5000/api/bookmarks/toggle', {
+      const { data } = await API.post('/bookmarks/toggle', {
         tmdbId: item.id,
         title: item.title || item.name,
         type,
@@ -68,7 +68,7 @@ const Home = () => {
       });
 
       // Refresh bookmarks
-      const { data: updatedBookmarks } = await axios.get('http://localhost:5000/api/bookmarks', {
+      const { data: updatedBookmarks } = await API.get('/bookmarks', {
         headers: { Authorization: `Bearer ${token}` }
       });
       dispatch(setBookmarks(updatedBookmarks));

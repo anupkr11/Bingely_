@@ -1,7 +1,7 @@
 import MovieCard from '../components/MovieCard';
 import { useSelector, useDispatch } from 'react-redux';
 import { setBookmarks } from '../store';
-import axios from 'axios';
+import API from '../api/axios';
 import { fetchVideos } from '../api/tmdb';
 import TrailerModal from '../components/TrailerModal';
 import DetailsModal from '../components/DetailsModal';
@@ -18,7 +18,7 @@ const Bookmarks = () => {
     // For bookmarks, we use tmdbId as id if it comes from our DB
     const id = item.tmdbId || item.id;
     try {
-      await axios.post('http://localhost:5000/api/bookmarks/toggle', {
+      await API.post('/bookmarks/toggle', {
         tmdbId: id,
         title: item.title,
         type: item.type,
@@ -28,7 +28,7 @@ const Bookmarks = () => {
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      const { data } = await axios.get('http://localhost:5000/api/bookmarks', {
+      const { data } = await API.get('/bookmarks', {
         headers: { Authorization: `Bearer ${token}` }
       });
       dispatch(setBookmarks(data));

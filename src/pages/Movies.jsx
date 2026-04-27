@@ -3,7 +3,7 @@ import MovieCard from '../components/MovieCard';
 import { fetchMovies, fetchVideos } from '../api/tmdb';
 import { useSelector, useDispatch } from 'react-redux';
 import { setBookmarks } from '../store';
-import axios from 'axios';
+import API from '../api/axios';
 import TrailerModal from '../components/TrailerModal';
 import DetailsModal from '../components/DetailsModal';
 import { toast } from 'react-hot-toast';
@@ -43,7 +43,7 @@ const Movies = () => {
   const handleToggleBookmark = async (item) => {
     if (!token) return alert('Please login to bookmark items');
     try {
-      await axios.post('http://localhost:5000/api/bookmarks/toggle', {
+      await API.post('/bookmarks/toggle', {
         tmdbId: item.id,
         title: item.title,
         type: 'movie',
@@ -53,7 +53,7 @@ const Movies = () => {
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      const { data } = await axios.get('http://localhost:5000/api/bookmarks', {
+      const { data } = await API.get('/bookmarks', {
         headers: { Authorization: `Bearer ${token}` }
       });
       dispatch(setBookmarks(data));

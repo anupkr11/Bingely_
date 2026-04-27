@@ -46,7 +46,7 @@ const Sidebar = () => {
 
       <div className="md:mt-auto ml-auto md:ml-0 flex items-center md:flex-col gap-4 relative">
         {user && (
-          <span className="hidden md:block text-[10px] text-grey-blue truncate max-w-[80px] text-center">
+          <span className="hidden md:block text-[15px] text-grey-blue truncate max-w-[80px] text-center">
             {user.firstName || user.email.split('@')[0]}
           </span>
         )}

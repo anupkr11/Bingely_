@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { Clapperboard } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { loginStart, loginSuccess, loginFailure } from '../store';
-import axios from 'axios';
+import API from '../api/axios';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -19,8 +19,8 @@ const Login = () => {
     dispatch(loginStart());
 
     try {
-      const { data } = await axios.post(
-        'http://localhost:5000/api/auth/login',
+      const { data } = await API.post(
+        '/auth/login',
         { email, password }
       );
 

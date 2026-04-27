@@ -10,7 +10,7 @@ import Bookmarks from './pages/Bookmarks';
 import { useSelector, useDispatch } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
 import { setBookmarks } from './store';
-import axios from 'axios';
+import API from './api/axios';
 import { useEffect } from 'react';
 
 function App() {
@@ -21,7 +21,7 @@ function App() {
     const fetchAllBookmarks = async () => {
       if (token) {
         try {
-          const { data } = await axios.get('http://localhost:5000/api/bookmarks', {
+          const { data } = await API.get('/bookmarks', {
             headers: { Authorization: `Bearer ${token}` }
           });
           dispatch(setBookmarks(data));
