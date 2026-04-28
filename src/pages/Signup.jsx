@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Clapperboard } from 'lucide-react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { loginStart, loginSuccess, loginFailure } from '../store';
 import API from '../api/axios';
 
@@ -12,23 +12,29 @@ const Signup = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { loading } = useSelector((state) => state.auth); // 👈 added
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (password !== confirmPassword) {
       return setError("Passwords don't match");
     }
 
+    setError('');
     dispatch(loginStart());
+
     try {
-      const { data } = await API.post('/auth/register', { 
-        firstName, 
-        lastName, 
-        email, 
-        password 
+      const { data } = await API.post('/auth/register', {
+        firstName,
+        lastName,
+        email,
+        password,
       });
+
       dispatch(loginSuccess(data));
       navigate('/');
     } catch (err) {
@@ -41,10 +47,10 @@ const Signup = () => {
   return (
     <div className="min-h-screen bg-dark-blue flex flex-col items-center pt-20 px-4">
       <Clapperboard className="text-primary w-8 h-8 mb-20" />
-      
+
       <div className="bg-semi-dark-blue p-8 md:p-12 rounded-3xl w-full max-w-[400px]">
         <h1 className="text-3xl mb-10 font-light">Sign Up</h1>
-        
+
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <input
             type="text"
@@ -72,7 +78,7 @@ const Signup = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          
+
           <input
             type="password"
             placeholder="Password"
@@ -91,18 +97,28 @@ const Signup = () => {
             required
           />
 
-          {error && <p className="text-primary text-xs mt-2">{error}</p>}
+          {error && (
+            <p className="text-primary text-xs mt-2">{error}</p>
+          )}
 
           <button
             type="submit"
-            className="w-full py-4 bg-primary text-pure-white rounded-lg mt-4 hover:bg-pure-white hover:text-dark-blue transition-colors font-light"
+            disabled={loading}
+            className="w-full py-4 bg-primary text-pure-white rounded-lg mt-4 flex items-center justify-center gap-2 hover:bg-pure-white hover:text-dark-blue transition-all duration-200 font-light disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Create an account
+            {loading ? (
+              <>
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                Processing...
+              </>
+            ) : (
+              'Create an account'
+            )}
           </button>
         </form>
 
         <p className="text-center mt-6 text-pure-white/75 font-light">
-          Already have an account?{' '}
+          Already have an account{' '}
           <NavLink to="/login" className="text-primary hover:underline">
             Login
           </NavLink>
