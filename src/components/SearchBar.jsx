@@ -1,6 +1,14 @@
 import React from 'react';
 import { Search } from 'lucide-react';
 
+/**
+ * SearchBar Component
+ * A reusable, styled input field used for searching media content.
+ * 
+ * @param {string} placeholder - Custom placeholder text
+ * @param {string} value - Current value of the search input (controlled component)
+ * @param {Function} onChange - Callback function triggered when the input changes
+ */
 const SearchBar = ({ placeholder, value, onChange }) => {
   return (
     <div className="flex items-center gap-4 md:gap-6 px-0">
